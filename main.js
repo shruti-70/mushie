@@ -6,7 +6,9 @@ const cron = require("node-cron");
 let mainWindow;
 const sleepFile = path.join(__dirname, "mushie_state.txt");
 
-app.whenReady().then(() => {
+if (require.main === module) { 
+  app.whenReady().then(() => { 
+
   setTimeout(createCatPopup, 1000); 
 
  
@@ -74,4 +76,5 @@ function createCatPopup() {
       mainWindow = null;
     }
   }, 10000);
+}
 }
