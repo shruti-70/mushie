@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+require("./main.js");
 const readline = require("readline");
 const { exec } = require("child_process");
 const os = require("os");
