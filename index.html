@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cat Notifier</title>
+  <style>
+    body {
+      background: transparent;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .cat {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      width: 80px; /* Small size */
+      height: auto;
+    }
+    .message {
+      position: absolute;
+      top: -20px;
+      padding: 5px 10px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 10px;
+      font-size: 12px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <img id="cat" src="cat1.png" class="cat"> <!-- First frame -->
+  <div class="message">Hello, Human!</div>
+
+  <script>
+    const messages = [
+      "Drink some water! 💧",
+      "Time to stretch! 🏃‍♂️",
+      "Take a deep breath! 🌿",
+      "Hey! Don’t forget to blink. 👀",
+      "How about a quick snack? 🍏"
+    ];
+
+    // Show a random message
+    document.querySelector('.message').textContent = messages[Math.floor(Math.random() * messages.length)];
+
+    setTimeout(() => {
+      document.querySelector('.message').style.display = "block";
+    }, 1000);
+
+  
+    let frame = 0;
+    setInterval(() => {
+      const catImg = document.getElementById("cat");
+      catImg.src = frame === 0 ? "cat2.png" : "cat1.png"; 
+      frame = 1 - frame; 
+    }, 500); 
+  </script>
+</body>
+</html>
