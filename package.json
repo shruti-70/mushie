@@ -1,0 +1,29 @@
+{
+  "name": "mushie-cat",
+  "version": "1.0.0",
+  "description": "Cat Assistant ",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "echo \"No tests specified\" && exit 1"
+    
+  },
+  
+  "bin": {
+    "mushie": "./cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shruti-70/mushie.git"
+  },
+  "author": "Shruti",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shruti-70/mushie/issues"
+  },
+  "homepage": "https://github.com/shruti-70/mushie#readme",
+  "dependencies": {
+    "electron": "^35.1.2",
+    "node-cron": "^3.0.3"
+  }
+}

@@ -1,13 +1,29 @@
-const { app, BrowserWindow, screen, ipcMain } = require("electron");
+const { app, BrowserWindow, screen } = require("electron");
+const fs = require("fs");
+const path = require("path");
+const cron = require("node-cron");
 
 let mainWindow;
+const sleepFile = path.join(__dirname, "mushie_state.txt");
 
 app.whenReady().then(() => {
-  setTimeout(createCatPopup, 1000); // First pop-up after 1 sec
-  setInterval(createCatPopup,  60 * 1000); // Every 2 hours
+  setTimeout(createCatPopup, 1000); 
+
+ 
+  cron.schedule("0 */2 * * *", () => {
+    if (!isSleeping()) {
+      createCatPopup();
+    }
+  });
 });
 
+function isSleeping() {
+  return fs.existsSync(sleepFile) && fs.readFileSync(sleepFile, "utf8").trim() === "sleep";
+}
+
 function createCatPopup() {
+  if (isSleeping()) return; 
+
   const display = screen.getPrimaryDisplay();
   const { width, height } = display.workAreaSize;
 
@@ -23,24 +39,39 @@ function createCatPopup() {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-    }
+    },
   });
 
   mainWindow.loadFile("index.html");
 
-  // Send message after loading
   mainWindow.webContents.once("did-finish-load", () => {
-    const messages = ["Let's play hoomann🥺",
-    "Hydrate yourself 😺","Hunting is good but taking a break is better😼",
-    "Purr can i get some pets🙃"," Stretch your paws hooman🐾", "Did you drink water?😾","What a busy day, i napped a lot😺",
-    "Fun fact: my creator thinks they are cat😹","Its a nice day, how about a break?🐱","take_a_break(hooman)","Keep going hooman😼"
-    ,"Lets play catch!😺"];
+    const messages = [
+      "Hydrate yourself 😺",
+      "Hunting is good but taking a break is better😼",
+      "Purr can i get some pets🙃",
+      "Stretch your paws hooman🐾",
+      "Did you drink water yet?😾",
+      "What a busy day, i napped a lot😺",
+      "Fun fact: my creator thinks they are a cat😹",
+      "It's a nice day, how about a break?🐱",
+      "take_a_break(hooman)",
+      "Keep going hooman😼",
+      "Let's play catch!😺",
+      "Meowster programmer, even the best coders need a pause! 🖥️🐾",
+      "Fun fact: I can jump higher than you😼",
+      "Life is about balance: Work. Play. Nap. Repeat. 😸",
+      "Pawse for a moment! Did you blink in the last hour? 👀🐾"
+    ];
+
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
     mainWindow.webContents.send("show-message", randomMessage);
   });
 
   // Close after 10 sec
   setTimeout(() => {
-    if (mainWindow) mainWindow.close();
+    if (mainWindow) {
+      mainWindow.close();
+      mainWindow = null;
+    }
   }, 10000);
 }

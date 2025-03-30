@@ -11,40 +11,37 @@ const rl = readline.createInterface({ input: process.stdin, output: process.stdo
 
 console.log("🐱 Mushie CLI Ready! Type 'help' for commands.");
 
-// Log file path
 const logFilePath = path.join(__dirname, "logs.txt");
+const sleepFile = path.join(__dirname, "mushie_state.txt");
 
+// Logging function
 function logCommand(command) {
     const logEntry = `[${new Date().toISOString()}] ${command}\n`;
     fs.appendFileSync(logFilePath, logEntry, "utf8");
 }
 
-
-function showHelp() {
-    console.log(`
-🐱 Mushie CLI Commands:
-
-  gpu              - Show GPU details
-  sysinfo         - Show system info (OS, CPU, RAM)
-  ram-info        - Show RAM usage details
-  fetch <file>    - Get the full path of a file
-  open <file>     - Open a file or folder
-  scratches       - Responds with "purr purr" 🐱
-  sleep           - Stop the pop-up until reboot or 'mushie wake up'
-  wake up         - Restart the pop-up with scheduling
-  create <file>   - Create a new file
-  ip              - Show your IP address
-  web <url>       - Open a website in the default browser
-  history         - Show past commands
-  clear-history   - Clear command logs
-  exit            - Close Mushie CLI
-`);
-}
-
+// GPU Info
 function showGPU() {
     exec("wmic path win32_VideoController get name", (err, stdout) => {
         if (err) return console.error("❌ Cannot fetch GPU info.");
         console.log("🎮 GPU Info:\n", stdout);
+    });
+}
+
+// uses powershell get child term
+
+function fetchPath(file) {
+    if (!file) return console.log("❌ Please provide a file name.");
+    console.log(`🔍Searching for "${file}"... ( May take a while hooman))`);
+
+    const searchCommand = `dir /s /b C:\\ | findstr /i "${file}"`;
+
+    exec(searchCommand, (err, stdout, stderr) => {
+        if (err || !stdout.trim()) {
+            console.log(`❌ File not found: ${file}`);
+        } else {
+            console.log(`📂 Found:\n${stdout.trim()}`);
+        }
     });
 }
 
@@ -55,45 +52,50 @@ function showSystemInfo() {
     console.log(`💾 RAM: ${(os.totalmem() / 1e9).toFixed(2)} GB`);
 }
 
+// RAM Info
 function showRAMInfo() {
     console.log(`💾 Total RAM: ${(os.totalmem() / 1e9).toFixed(2)} GB`);
     console.log(`📉 Free RAM: ${(os.freemem() / 1e9).toFixed(2)} GB`);
 }
-
-// Get File Path
-function fetchPath(file) {
-    if (!file) return console.log("❌ Please provide a file name.");
-    const filePath = path.resolve(file);
-    console.log(`📂 Full path: ${filePath}`);
-}
-
-
 function openFile(file) {
     if (!file) return console.log("❌ Please provide a file name.");
-    console.log(`📂 Opening ${file}...`);
-    exec(`start "" "${file}"`);
+    
+    file = file.replace(/^"(.*)"$/, "$1");
+    const filePath = path.resolve(file);
+
+    if (!fs.existsSync(filePath)) {
+        return console.log(`❌ File not found: ${filePath}`);
+    }
+
+    console.log(`📂 Opening ${filePath}...`);
+    
+
+    const openCommand = process.platform === "win32" ? `start "" "${filePath}"` : `open "${filePath}"`;
+    exec(openCommand, (err) => {
+        if (err) console.log("❌ Failed to open file.");
+    });
 }
+
 
 
 function scratches() {
     console.log("🐾 Yayy purr purr 🐱");
 }
 
-
 function sleepMushie() {
-    console.log("😴 Mushie is now in her sleepy slumber... will wake up after reboot or 'mushie wake up'.");
-    exec("taskkill /IM electron.exe /F", (err) => {
-        if (err) console.log("❌ Failed to stop pop-up.");
-    });
+    fs.writeFileSync(sleepFile, "sleep", "utf8");
+    console.log("😴 Mushie is now sleeping. No more pop-ups until reboot or 'mushie wake up'.");
 }
 
-// Wake Up Mushie (Restart)
+
 function wakeUpMushie() {
-    console.log("☀️ Helloo hooman");
-    exec("node main.js");
+    if (fs.existsSync(sleepFile)) {
+        fs.unlinkSync(sleepFile); // removes the flag
+    }
+    console.log("☀️ Mushie is awake! Pop-ups will resume.");
 }
 
-
+// Create File
 function createFile(filename) {
     if (!filename) return console.log("❌ Please provide a file name.");
     fs.writeFileSync(filename, "", "utf8");
@@ -114,14 +116,14 @@ function getIP() {
     console.log(`🌍 Your IP: ${ip}`);
 }
 
-
+// Open Website
 function openWebsite(url) {
     if (!url) return console.log("❌ Please provide a URL.");
     console.log(`🌐 Opening ${url}...`);
     exec(`start ${url}`);
 }
 
-
+// Show Command History
 function showHistory() {
     if (!fs.existsSync(logFilePath)) {
         console.log("📜 No history found.");
@@ -131,12 +133,13 @@ function showHistory() {
     console.log(fs.readFileSync(logFilePath, "utf8"));
 }
 
+
 function clearHistory() {
     fs.writeFileSync(logFilePath, "", "utf8");
     console.log("🗑️ Mushie history cleared!");
 }
 
-// Handle Commands
+// Handle CLI Commands
 rl.on("line", (input) => {
     const [command, ...args] = input.trim().split(" ");
     const arg = args.join(" ");
@@ -144,7 +147,25 @@ rl.on("line", (input) => {
     logCommand(input); 
 
     switch (command) {
-        case "help": showHelp(); break;
+        case "help": 
+            console.log(`
+🐱 Mushie CLI Commands:
+
+  gpu              - Show GPU details
+  sysinfo         - Show system info (OS, CPU, RAM)
+  ram-info        - Show RAM usage details
+  fetch <file>    - Get the full path of a file
+  scratches       - Responds with "purr purr" 🐱
+  sleep           - Stop the pop-up until reboot or 'mushie wake up'
+  wake up         - Restart the pop-up with scheduling
+  create <file>   - Create a new file
+  ip              - Show your IP address
+  web <url>       - Open a website in the default browser
+  history         - Show past commands
+  clear-history   - Clear command logs
+  exit            - Close Mushie CLI
+`);
+            break;
         case "gpu": showGPU(); break;
         case "sysinfo": showSystemInfo(); break;
         case "ram-info": showRAMInfo(); break;
@@ -152,7 +173,14 @@ rl.on("line", (input) => {
         case "open": openFile(arg); break;
         case "scratches": scratches(); break;
         case "sleep": sleepMushie(); break;
-        case "wake up": wakeUpMushie(); break;
+        case "wake":
+    if (args[0] === "up") {
+        wakeUpMushie();
+    } else {
+        console.log("Unknown command. Type 'help' for options.");
+    }
+    break;
+
         case "create": createFile(arg); break;
         case "ip": getIP(); break;
         case "web": openWebsite(arg); break;
