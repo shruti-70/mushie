@@ -1,33 +1,45 @@
-const { app, BrowserWindow, screen } = require("electron");
+const { app, BrowserWindow, screen, ipcMain } = require("electron");
 
 let mainWindow;
 
 app.whenReady().then(() => {
-  setTimeout(createCatPopup, 1000); // Wait 1 sec before first pop-up
-  setInterval(createCatPopup, 2 * 60 * 60 * 1000); // Repeat every 2 hours
+  setTimeout(createCatPopup, 1000); // First pop-up after 1 sec
+  setInterval(createCatPopup,  60 * 1000); // Every 2 hours
 });
 
 function createCatPopup() {
-  const display = screen.getPrimaryDisplay(); // ✅ Get screen size
-  const { width, height } = display.workAreaSize; // ✅ Extract width & height
+  const display = screen.getPrimaryDisplay();
+  const { width, height } = display.workAreaSize;
 
   mainWindow = new BrowserWindow({
-    width: 150,  // Small cat pop-up
-    height: 150,
-    x: width - 160,  // ✅ Position at bottom-right
-    y: height - 130,
+    width: 160,
+    height: 280,
+    x: width - 160,
+    y: height - 160,
     frame: false,
     transparent: true,
     alwaysOnTop: true,
     resizable: false,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      contextIsolation: false,
     }
   });
 
   mainWindow.loadFile("index.html");
 
-  // Auto-close after 10 seconds
+  // Send message after loading
+  mainWindow.webContents.once("did-finish-load", () => {
+    const messages = ["Let's play hoomann🥺",
+    "Hydrate yourself 😺","Hunting is good but taking a break is better😼",
+    "Purr can i get some pets🙃"," Stretch your paws hooman🐾", "Did you drink water?😾","What a busy day, i napped a lot😺",
+    "Fun fact: my creator thinks they are cat😹","Its a nice day, how about a break?🐱","take_a_break(hooman)","Keep going hooman😼"
+    ,"Lets play catch!😺"];
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+    mainWindow.webContents.send("show-message", randomMessage);
+  });
+
+  // Close after 10 sec
   setTimeout(() => {
     if (mainWindow) mainWindow.close();
   }, 10000);
