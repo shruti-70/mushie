@@ -1,12 +1,12 @@
 {
   "name": "mushie-cat",
   "version": "1.0.4",
-  "description": "Cat Assistant ",
+  "description": "Cat Assistant",
   "main": "./main.js",
   "scripts": {
     "start": "electron .",
     "test": "echo \"No tests specified\" && exit 1",
-    "postinstall": "electron ."
+    "postinstall": "node ./setup.js"
   },
   "bin": {
     "mushie": "./cli.js"

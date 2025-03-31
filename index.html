@@ -51,9 +51,11 @@
             <span id="message"></span>
         </div>
     </div>
-
-    <script>
-        const catImages = ["asset/cat1.png", "asset/cat2.png"];
+<script>
+    const catImages = [
+    path.join(__dirname, "asset/cat1.png"), 
+    path.join(__dirname, "asset/cat2.png")
+  ];
         let currentIndex = 0; 
 
         function animateMushie() {
