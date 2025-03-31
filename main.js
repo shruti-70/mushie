@@ -6,28 +6,28 @@ const cron = require("node-cron");
 let mainWindow;
 const sleepFile = path.join(__dirname, "mushie_state.txt");
 
-if (require.main === module) { 
-  app.whenReady().then(() => { 
-
-  setTimeout(createCatPopup, 1000); 
-
- 
-  cron.schedule("0 */2 * * *", () => {
-    if (!isSleeping()) {
-      createCatPopup();
-    }
-  });
-});
-
 function isSleeping() {
-  return fs.existsSync(sleepFile) && fs.readFileSync(sleepFile, "utf8").trim() === "sleep";
+  const sleeping = fs.existsSync(sleepFile) && fs.readFileSync(sleepFile, "utf8").trim() === "sleep";
+  console.log(`isSleeping() = ${sleeping}`);
+  return sleeping;
 }
 
 function createCatPopup() {
-  if (isSleeping()) return; 
+  console.log("createCatPopup() called...");
+  if (isSleeping()) {
+    console.log("Sleeping. Skipping popup.");
+    return;
+  }
+
+  if (!app.isReady()) {
+    app.whenReady().then(createCatPopup);
+    return;
+  }
 
   const display = screen.getPrimaryDisplay();
   const { width, height } = display.workAreaSize;
+
+  console.log(`Display size: ${width}x${height}`);
 
   mainWindow = new BrowserWindow({
     width: 160,
@@ -44,9 +44,11 @@ function createCatPopup() {
     },
   });
 
-  mainWindow.loadFile("index.html");
+  mainWindow.loadFile(path.join(__dirname, "index.html"));
+  console.log("Window loaded with index.html");
 
   mainWindow.webContents.once("did-finish-load", () => {
+    console.log("Page loaded inside the popup.");
     const messages = [
       "Hydrate yourself 😺",
       "Hunting is good but taking a break is better😼",
@@ -66,15 +68,34 @@ function createCatPopup() {
     ];
 
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+    console.log(`Sending message: ${randomMessage}`);
     mainWindow.webContents.send("show-message", randomMessage);
   });
 
-  // Close after 10 sec
+
   setTimeout(() => {
     if (mainWindow) {
+      console.log("Closing popup after 10 seconds.");
       mainWindow.close();
       mainWindow = null;
     }
   }, 10000);
 }
+
+if (require.main === module) {
+  app.whenReady().then(() => {
+    console.log("App is ready. Creating first popup...");
+    setTimeout(createCatPopup, 1000);
+
+    cron.schedule("0 */2 * * *", () => {
+      if (!isSleeping()) {
+        createCatPopup();
+      }
+    });
+  });
 }
+
+module.exports = {
+  createCatPopup,
+  isSleeping
+};
