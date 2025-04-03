@@ -12,6 +12,7 @@ const homeDir = os.homedir();
 const scriptName = isWindows ? 'start-mushie.bat' : 'start-mushie.sh';
 const scriptPath = path.join(homeDir, scriptName);
 
+// Create the content for the starter script
 let scriptContent;
 if (isWindows) {
   scriptContent = `@echo off
@@ -27,6 +28,7 @@ node ~/.npm-global/lib/node_modules/mushie-cat/launcher.js &
 
 
 fs.writeFileSync(scriptPath, scriptContent);
+
 
 const launcherPath = path.join(__dirname, 'launcher.js');
 const launcherContent = `#!/usr/bin/env node
@@ -49,7 +51,7 @@ child.unref();
 
 fs.writeFileSync(launcherPath, launcherContent);
 if (!isWindows) {
-
+  // Make launcher executable on Unix 
   fs.chmodSync(launcherPath, '755');
   fs.chmodSync(scriptPath, '755');
 }

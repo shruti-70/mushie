@@ -1,33 +1,34 @@
 const { app, BrowserWindow, screen } = require("electron");
-const fs = require("fs");
-const path = require("path");
 const cron = require("node-cron");
+const path = require("path");
 
 let mainWindow;
-const sleepFile = path.join(__dirname, "mushie_state.txt");
 
-function isSleeping() {
-  const sleeping = fs.existsSync(sleepFile) && fs.readFileSync(sleepFile, "utf8").trim() === "sleep";
-  console.log(`isSleeping() = ${sleeping}`);
-  return sleeping;
-}
+const messages = [
+  "Let's play hooman 🥺",
+  "Hydrate yourself 😺",
+  "Hunting is good but taking a break is better 😼",
+  "Purr can I get some pets? 🙃",
+  "Stretch your paws hooman 🐾",
+  "Did you drink water? 😾",
+  "What a busy day, I napped a lot 😺",
+  "Fun fact: my creator thinks they are a cat 😹",
+  "It's a nice day, how about a break? 🐱",
+  "take_a_break(hooman)",
+  "Keep going hooman 😼",
+  "Let's play catch! 😺",
+];
+
+app.whenReady().then(() => {
+  setTimeout(createCatPopup, 1000);
+  cron.schedule("0 */2 * * *", createCatPopup);
+  // cron.schedule("*/55 * * * * *", createCatPopup); testing
+ 
+});
 
 function createCatPopup() {
-  console.log("createCatPopup() called...");
-  if (isSleeping()) {
-    console.log("Sleeping. Skipping popup.");
-    return;
-  }
-
-  if (!app.isReady()) {
-    app.whenReady().then(createCatPopup);
-    return;
-  }
-
   const display = screen.getPrimaryDisplay();
   const { width, height } = display.workAreaSize;
-
-  console.log(`Display size: ${width}x${height}`);
 
   mainWindow = new BrowserWindow({
     width: 160,
@@ -39,63 +40,24 @@ function createCatPopup() {
     alwaysOnTop: true,
     resizable: false,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-    },
+      preload: path.join(__dirname, "preload.js"),
+      contextIsolation: true,
+      enableRemoteModule: false,
+      nodeIntegration: false,
+    }
   });
 
-  mainWindow.loadFile(path.join(__dirname, "index.html"));
-  console.log("Window loaded with index.html");
-
+  mainWindow.loadFile("index.html");
   mainWindow.webContents.once("did-finish-load", () => {
-    console.log("Page loaded inside the popup.");
-    const messages = [
-      "Hydrate yourself 😺",
-      "Hunting is good but taking a break is better😼",
-      "Purr can i get some pets🙃",
-      "Stretch your paws hooman🐾",
-      "Did you drink water yet?😾",
-      "What a busy day, i napped a lot😺",
-      "Fun fact: my creator thinks they are a cat😹",
-      "It's a nice day, how about a break?🐱",
-      "take_a_break(hooman)",
-      "Keep going hooman😼",
-      "Let's play catch!😺",
-      "Meowster programmer, even the best coders need a pause! 🖥️🐾",
-      "Fun fact: I can jump higher than you😼",
-      "Life is about balance: Work. Play. Nap. Repeat. 😸",
-      "Pawse for a moment! Did you blink in the last hour? 👀🐾"
-    ];
-
-    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-    console.log(`Sending message: ${randomMessage}`);
-    mainWindow.webContents.send("show-message", randomMessage);
-  });
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)]; 
+    mainWindow.webContents.executeJavaScript(`
+        document.getElementById("message").innerText = "${randomMessage}";
+        document.getElementById("bubble").style.display = "block";
+    `);
+});
 
 
   setTimeout(() => {
-    if (mainWindow) {
-      console.log("Closing popup after 10 seconds.");
-      mainWindow.close();
-      mainWindow = null;
-    }
+    if (mainWindow) mainWindow.close();
   }, 10000);
 }
-
-if (require.main === module) {
-  app.whenReady().then(() => {
-    console.log("App is ready. Creating first popup...");
-    setTimeout(createCatPopup, 1000);
-
-    cron.schedule("0 */2 * * *", () => {
-      if (!isSleeping()) {
-        createCatPopup();
-      }
-    });
-  });
-}
-
-module.exports = {
-  createCatPopup,
-  isSleeping
-};
