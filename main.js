@@ -41,11 +41,11 @@ function createCatPopup() {
     titleBarStyle: "hidden",
     visualEffectState: "active",
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
       enableRemoteModule: false,
       nodeIntegration: false,
-    }
+  }
+
   });
 
   mainWindow.setIgnoreMouseEvents(false, { forward: true });
