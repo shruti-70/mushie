@@ -19,11 +19,16 @@ const messages = [
   "Let's play catch! 😺",
 ];
 
+
 app.whenReady().then(() => {
-  setTimeout(createCatPopup, 1000);
-  cron.schedule("0 */2 * * *", createCatPopup);
-  // cron.schedule("*/55 * * * * *", createCatPopup); testing
- 
+  setTimeout(createCatPopup, 1000); 
+  cron.schedule("0 */2 * * *", createCatPopup); // Every 2 hours
+  // cron.schedule("*/55 * * * * *", createCatPopup); // For testing (every 55 sec)
+
+  // Handle macOS behavior
+  app.on("window-all-closed", () => {
+    if (process.platform !== "darwin") app.quit();
+  });
 });
 
 function createCatPopup() {
@@ -40,24 +45,26 @@ function createCatPopup() {
     alwaysOnTop: true,
     resizable: false,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
-      contextIsolation: true,
-      enableRemoteModule: false,
-      nodeIntegration: false,
-    }
+      nodeIntegration: true, 
+      contextIsolation: false, 
+    },
   });
 
   mainWindow.loadFile("index.html");
+
   mainWindow.webContents.once("did-finish-load", () => {
-    const randomMessage = messages[Math.floor(Math.random() * messages.length)]; 
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
     mainWindow.webContents.executeJavaScript(`
-        document.getElementById("message").innerText = "${randomMessage}";
+        document.getElementById("message").innerText = ${JSON.stringify(randomMessage)};
         document.getElementById("bubble").style.display = "block";
     `);
-});
+  });
 
-
+  
   setTimeout(() => {
-    if (mainWindow) mainWindow.close();
+    if (mainWindow) {
+      mainWindow.close();
+      mainWindow = null;
+    }
   }, 10000);
 }
