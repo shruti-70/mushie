@@ -22,8 +22,6 @@ ram-info – Show RAM usage details
 
 fetch <file> – Get the full path of a file
 
-open <file> – Open a file
-
 scratches – Responds with "purr purr" 🐱
 
 sleep – Stop the pop-up until reboot or mushie wake up
