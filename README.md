@@ -7,12 +7,9 @@ She also interacts with you via the terminal, providing useful system commands a
 - 🐾 **Break Reminders** – Pops up to remind you to rest.  
 - 🎭 **Animated Cat** – A cute animation to keep it fun!  
 - 💻 **Terminal Commands** – Useful system commands at your fingertips.  
-- ⏸️ **Pause & Resume** – Control when reminders appear.  
+- ⏸️ **Pause & Resume** – Control when reminders appear.
 
-## 📦 Installation  
-Install Mushie globally via npm:  
-```sh
-npm i -g mushie-cat
+Imp Note :- The animation feature is getting fixed 
 
 🐱 Mushie CLI Commands:
 
@@ -32,4 +29,10 @@ npm i -g mushie-cat
   popup            - Show a Mushie popup right now
   exit             - Close Mushie CLI
 
-Please Note :- The animation feature is getting fixed 
+
+## 📦 Installation  
+Install Mushie globally via npm:  
+```sh
+npm i -g mushie-cat
+
+
