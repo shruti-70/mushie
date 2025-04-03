@@ -106,7 +106,7 @@ rl.on("line", (input) => {
         case "fetch": fetchPath(arg); break;
         case "open": openFile(arg); break;
         case "sleep": sleepMushie(); break;
-        case "wake": if (args[0] === "up") wakeUpMushie(); break;
+        case "wake": if (args[0] === "up") wakeUpMushie(); showPopup(); break;
         case "popup": showPopup(); break;
         case "exit": console.log("Bye! 👋"); rl.close(); process.exit(0); break;
         default: console.log("Unknown command. Type 'help' for options.");
