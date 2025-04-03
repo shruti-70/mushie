@@ -20,7 +20,7 @@ const messages = [
 
 app.whenReady().then(() => {
   setTimeout(createCatPopup, 1000);
-  cron.schedule("0 */2 * * *", createCatPopup);
+  cron.schedule("0 */1 * * *", createCatPopup);
 });
 
 function createCatPopup() {
