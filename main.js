@@ -3,7 +3,6 @@ const cron = require("node-cron");
 const path = require("path");
 
 let mainWindow;
-
 const messages = [
   "Let's play hooman 🥺",
   "Hydrate yourself 😺",
@@ -19,16 +18,9 @@ const messages = [
   "Let's play catch! 😺",
 ];
 
-
 app.whenReady().then(() => {
-  setTimeout(createCatPopup, 1000); 
-  cron.schedule("0 */2 * * *", createCatPopup); // Every 2 hours
-  // cron.schedule("*/55 * * * * *", createCatPopup); // For testing (every 55 sec)
-
-  // Handle macOS behavior
-  app.on("window-all-closed", () => {
-    if (process.platform !== "darwin") app.quit();
-  });
+  setTimeout(createCatPopup, 1000);
+  cron.schedule("0 */2 * * *", createCatPopup);
 });
 
 function createCatPopup() {
@@ -44,27 +36,31 @@ function createCatPopup() {
     transparent: true,
     alwaysOnTop: true,
     resizable: false,
+    hasShadow: false,
+    thickFrame: false,
+    titleBarStyle: "hidden",
+    visualEffectState: "active",
     webPreferences: {
-      nodeIntegration: true, 
-      contextIsolation: false, 
-    },
+      preload: path.join(__dirname, "preload.js"),
+      contextIsolation: true,
+      enableRemoteModule: false,
+      nodeIntegration: false,
+    }
   });
 
+  mainWindow.setIgnoreMouseEvents(false, { forward: true });
+  mainWindow.setOpacity(1);
   mainWindow.loadFile("index.html");
 
   mainWindow.webContents.once("did-finish-load", () => {
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
     mainWindow.webContents.executeJavaScript(`
-        document.getElementById("message").innerText = ${JSON.stringify(randomMessage)};
+        document.getElementById("message").innerText = "${randomMessage}";
         document.getElementById("bubble").style.display = "block";
     `);
   });
 
-  
   setTimeout(() => {
-    if (mainWindow) {
-      mainWindow.close();
-      mainWindow = null;
-    }
+    if (mainWindow) mainWindow.close();
   }, 10000);
 }

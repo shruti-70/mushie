@@ -12,6 +12,7 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
+            overflow: hidden;
         }
         .container {
             position: relative;
@@ -19,16 +20,21 @@
         .cat {
             width: 100px;
         }
+        html, body {
+            background: rgba(0, 0, 0, 0) !important;
+            margin: 0;
+            padding: 0;
+            border: none !important;
+            box-shadow: none !important;
+        }
         .bubble {
             position: absolute;
             bottom: 120px;
             left: 50%;
             transform: translateX(-50%);
-            width: 100px;
+            width: 120px;
             background: white;
             padding: 8px 12px;
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
             font-family: Arial, sans-serif;
             font-size: 12px;
             display: none;
@@ -51,27 +57,25 @@
             <span id="message"></span>
         </div>
     </div>
-
     <script>
         let currentIndex = 0;
-        let catImages = [
-            "asset/cat1.png","asset/cat2.png"
-        ];
-    
+        let catImages = ["asset/cat1.png", "asset/cat2.png"];
+
         function animateCat() {
             currentIndex = (currentIndex + 1) % catImages.length;
             document.getElementById("cat").src = catImages[currentIndex];
         }
-    
+
         setInterval(animateCat, 500);
-    
+
         window.electron.receiveMessage((text) => {
             document.getElementById("message").innerText = text;
             document.getElementById("bubble").style.display = "block";
         });
-    
+
         function closeBubble() {
             document.getElementById("bubble").style.display = "none";
         }
     </script>
-    
+</body>
+</html>
