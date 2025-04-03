@@ -46,6 +46,6 @@ exit – Close Mushie CLI
 ## 📦 Installation  
 Install Mushie globally via npm:  
 ```sh
-npm i -g mushie-cat
+npm install -g mushie-cat
 
 
