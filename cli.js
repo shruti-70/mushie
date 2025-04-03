@@ -6,6 +6,7 @@ const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
 const { networkInterfaces } = require("os");
+const electronPath = require("electron");
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
@@ -25,13 +26,11 @@ function showGPU() {
     });
 }
 
-
 function showSystemInfo() {
     console.log(`🖥️ OS: ${os.type()} ${os.release()}`);
     console.log(`⚙️ CPU: ${os.cpus()[0].model}`);
     console.log(`💾 RAM: ${(os.totalmem() / 1e9).toFixed(2)} GB`);
 }
-
 
 function showRAMInfo() {
     console.log(`💾 Total RAM: ${(os.totalmem() / 1e9).toFixed(2)} GB`);
@@ -52,7 +51,6 @@ function fetchPath(file) {
     });
 }
 
-
 function openFile(file) {
     if (!file) return console.log("❌ Please provide a file name.");
     const filePath = path.resolve(file);
@@ -65,22 +63,19 @@ function openFile(file) {
     });
 }
 
-
 function scratches() {
     console.log("🐾 Yayy purr purr 🐱");
 }
-
 
 function sleepMushie() {
     fs.writeFileSync(sleepFile, "sleep", "utf8");
     console.log("😴 Mushie is now sleeping. No more pop-ups until reboot or 'mushie wake up'.");
 }
 
-
 function wakeUpMushie() {
     if (fs.existsSync(sleepFile)) fs.unlinkSync(sleepFile);
     console.log("☀️ Mushie is awake! Pop-ups will resume.");
-    showPopup(); 
+    showPopup();
 }
 
 function createFile(filename) {
@@ -88,7 +83,6 @@ function createFile(filename) {
     fs.writeFileSync(filename, "", "utf8");
     console.log(`📄 File '${filename}' created.`);
 }
-
 
 function getIP() {
     const nets = networkInterfaces();
@@ -103,13 +97,11 @@ function getIP() {
     console.log(`🌍 Your IP: ${ip}`);
 }
 
-
 function openWebsite(url) {
     if (!url) return console.log("❌ Please provide a URL.");
     console.log(`🌐 Opening ${url}...`);
     exec(`start ${url}`);
 }
-
 
 function showHistory() {
     if (!fs.existsSync(logFilePath)) return console.log("📜 No history found.");
@@ -117,21 +109,22 @@ function showHistory() {
     console.log(fs.readFileSync(logFilePath, "utf8"));
 }
 
-
 function clearHistory() {
     fs.writeFileSync(logFilePath, "", "utf8");
     console.log("🗑️ Mushie history cleared!");
 }
 
-
 function showPopup() {
     if (fs.existsSync(sleepFile)) {
         console.log("😴 Mushie is sleeping! No pop-ups.");
-        return; // is redudant to wake up but needed to avoid confusion
+        return;
     }
     console.log("🐱 Showing Mushie popup...");
+    
+    //  Fixed Electron spawn issue
+    const child = spawn(electronPath, [path.join(__dirname, "main.js")], { detached: true, stdio: "ignore" });
+    child.unref();
 }
-
 
 rl.on("line", (input) => {
     const [command, ...args] = input.trim().split(" ");
