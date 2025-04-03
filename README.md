@@ -11,23 +11,38 @@ She also interacts with you via the terminal, providing useful system commands a
 
 Imp Note :- The animation feature is getting fixed 
 
-🐱 Mushie CLI Commands:
+🐱 CLI Commands
+Use these commands to interact with Mushie:
 
-  gpu              - Show GPU details
-  sysinfo          - Show system info (OS, CPU, RAM)
-  ram-info         - Show RAM usage details
-  fetch <file>     - Get the full path of a file
-  open <file>      - Open a file
-  scratches        - Responds with "purr purr" 🐱
-  sleep            - Stop the pop-up until reboot or 'mushie wake up'
-  wake up          - Restart the pop-up with scheduling
-  create <file>    - Create a new file
-  ip               - Show your IP address
-  web <url>        - Open a website in the default browser
-  history          - Show past commands
-  clear-history    - Clear command logs
-  popup            - Show a Mushie popup right now
-  exit             - Close Mushie CLI
+gpu – Show GPU details
+
+sysinfo – Show system info (OS, CPU, RAM)
+
+ram-info – Show RAM usage details
+
+fetch <file> – Get the full path of a file
+
+open <file> – Open a file
+
+scratches – Responds with "purr purr" 🐱
+
+sleep – Stop the pop-up until reboot or mushie wake up
+
+wake up – Restart the pop-up with scheduling
+
+create <file> – Create a new file
+
+ip – Show your IP address
+
+web <url> – Open a website in the default browser
+
+history – Show past commands
+
+clear-history – Clear command logs
+
+popup – Show a Mushie pop-up right now
+
+exit – Close Mushie CLI
 
 
 ## 📦 Installation  
