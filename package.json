@@ -1,6 +1,6 @@
 {
   "name": "mushie-cat",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Cat Assistant",
   "main": "./main.js",
   "scripts": {
