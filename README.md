@@ -9,8 +9,6 @@ She also interacts with you via the terminal, providing useful system commands a
 - 💻 **Terminal Commands** – Useful system commands at your fingertips.  
 - ⏸️ **Pause & Resume** – Control when reminders appear.
 
-Imp Note :- The animation feature is getting fixed 
-
 🐱 CLI Commands
 Use these commands to interact with Mushie:
 
@@ -46,6 +44,6 @@ exit – Close Mushie CLI
 ## 📦 Installation  
 Install Mushie globally via npm:  
 ```sh
-npm i -g mushie-cat
+npm install -g mushie-cat
 
 
