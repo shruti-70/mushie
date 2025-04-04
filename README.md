@@ -3,6 +3,7 @@
 **Mushie** is your friendly animated cat assistant that helps you stay productive by reminding you to take breaks.  
 She also interacts with you via the terminal, providing useful system commands and a bit of feline charm! 😸  
 
+( Imp: Type "mushie" to start the terminal and "wake up" to start pop up scheduler. Debugging tips : Make sure electron@35.0.0 version is installed) 
 ## ✨ Features  
 - 🐾 **Break Reminders** – Pops up to remind you to rest.  
 - 🎭 **Animated Cat** – A cute animation to keep it fun!  
