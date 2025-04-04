@@ -41,6 +41,7 @@ function createCatPopup() {
     resizable: false,
     hasShadow: false,
     thickFrame: false,
+    skipTaskbar: true,
     titleBarStyle: "hidden",
     visualEffectState: "active",
     webPreferences: {
