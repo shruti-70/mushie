@@ -69,14 +69,40 @@ function scratches() {
 
 function sleepMushie() {
     fs.writeFileSync(sleepFile, "sleep", "utf8");
+
+    const pidPath = path.join(__dirname, "mushie_pid.txt");
+    if (fs.existsSync(pidPath)) {
+        const pid = parseInt(fs.readFileSync(pidPath, "utf8"));
+        try {
+            process.kill(pid);
+            console.log("🛑 Mushie background app stopped.");
+        } catch (err) {
+            console.log("⚠️ Couldn't kill Mushie process:", err.message);
+        }
+        fs.unlinkSync(pidPath);
+    }
+
     console.log("😴 Mushie is now sleeping. No more pop-ups until reboot or 'mushie wake up'.");
 }
+
+
+const pidPath = path.join(__dirname, "mushie_pid.txt");
 
 function wakeUpMushie() {
     if (fs.existsSync(sleepFile)) fs.unlinkSync(sleepFile);
     console.log("☀️ Mushie is awake! Pop-ups will resume.");
-    showPopup();
+
+    const child = spawn(electronPath, [path.join(__dirname, "main.js")], {
+        detached: true,
+        stdio: "ignore"
+    });
+
+    // Save PID to kill later
+    fs.writeFileSync(pidPath, child.pid.toString(), "utf8");
+
+    child.unref();
 }
+
 
 function createFile(filename) {
     if (!filename) return console.log("❌ Please provide a file name.");

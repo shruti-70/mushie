@@ -22,6 +22,9 @@ app.whenReady().then(() => {
   setTimeout(createCatPopup, 1000);
   cron.schedule("0 */1 * * *", createCatPopup);
 });
+app.on("window-all-closed", (e) => {
+  e.preventDefault(); // Doesnt quit
+});
 
 function createCatPopup() {
   const display = screen.getPrimaryDisplay();
